@@ -1,4 +1,4 @@
-# Ember-cli-deploy-init
+# ember-cli-deploy-frost
 
 This README outlines the details of collaborating on this Ember addon.
 
