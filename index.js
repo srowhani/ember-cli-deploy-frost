@@ -6,7 +6,9 @@
     createDeployPlugin: function(options) {
       let currentBranch = null
       let branch = options.branch || 'gh-pages'
-      let create = `git checkout --orphan ${branch} git commit -m --allow-empty git push -u origin ${branch}`
+      let commitMessage = options.commitMessage || `ember-cli-deploy-gh-pages: ${branch}`
+
+      let create = `git checkout --orphan ${branch}; git commit -m "${commitMessage}"; git push -u origin ${branch}`
       return {
         name: options.name,
         setup () {
