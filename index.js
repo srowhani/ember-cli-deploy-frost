@@ -31,7 +31,7 @@
         },
         configure(context) {
           return new Promise((resolve, reject) => {
-            context.ui.verbose = true
+            context.ui.verbose = context.config[this.name]
             var pluginConfig = context.config[this.name] || {}
             return git.origin(context.project.root).then(function(myRepo) {
               let worktreePath = pluginConfig.worktreePath || path.join(context.project.root, `../deploy-${context.project.name()}`)

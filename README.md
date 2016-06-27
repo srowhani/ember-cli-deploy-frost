@@ -24,7 +24,7 @@ ENV['gh-pages'] = {
 ```
 ## Installation
 
-`ember install ember-cli-deploy ember-cli-build ember-cli-deploy-gh-pages`
+`ember install ember-cli-deploy ember-cli-build-build ember-cli-deploy-gh-pages`
 
 ## ember-cli-deploy Hooks Implemented
 
