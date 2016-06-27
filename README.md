@@ -1,6 +1,6 @@
-# ember-cli-deploy-frost
+# ember-cli-deploy-gh-pages
 
-This README outlines the details of collaborating on this Ember addon.
+Make deploying to gh-pages great again!
 
 ## Installation
 

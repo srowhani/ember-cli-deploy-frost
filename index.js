@@ -2,7 +2,7 @@
 (function(Promise, exec, path, git) {
   'use strict'
   module.exports = {
-    name: 'ember-cli-deploy-frost',
+    name: 'ember-cli-deploy-gh-pages',
     createDeployPlugin: function(options) {
       let currentBranch = null
       let branch = options.branch || 'gh-pages'
@@ -32,7 +32,7 @@
             context.ui.verbose = true
             var pluginConfig = context.config[this.name] || {}
             return git.origin(context.project.root).then(function(myRepo) {
-              let worktreePath = pluginConfig.worktreePath || path.join(context.project.root, '../deploy-' + context.project.name())
+              let worktreePath = pluginConfig.worktreePath || path.join(context.project.root, `../deploy-${context.project.name()}`)
               try {
                 exec(`rm -rf ${worktreePath}`, (err, out) => {
                   err ? reject(err) : resolve(out)
