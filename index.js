@@ -15,12 +15,13 @@
           let create = `git checkout --orphan ${branch}; git commit -m "${commitMessage}"; git push -u origin ${branch}`
           return new Promise((resolve, reject) => {
             console.log(`Checking if branch '${branch}' already exists...`)
-            exec(`git name-rev --name-only HEAD`, (err, out) => {
+            exec(`git name-rev --name-only HEAD`, (err, currentBranch) => {
               if (err) reject(err)
+
               exec(`git branch | grep ${branch}`, (err, out) => {
                 if (err) {
                   console.log(`Creating branch '${branch} ...'`)
-                  exec(create, (err, out) => {
+                  exec(`${create}; git checkout ${currentBranch}`, (err, out) => {
                     err ? reject(err) : resolve(out)
                   })
                 }
@@ -31,8 +32,8 @@
         },
         configure(context) {
           return new Promise((resolve, reject) => {
-            context.ui.verbose = context.config[this.name]
             var pluginConfig = context.config[this.name] || {}
+            context.ui.verbose = pluginConfig.verbose
             return git.origin(context.project.root).then(function(myRepo) {
               let worktreePath = pluginConfig.worktreePath || path.join(context.project.root, `../deploy-${context.project.name()}`)
               try {
@@ -48,7 +49,8 @@
                   repo: pluginConfig.repo || myRepo,
                   branch: pluginConfig.branch || 'gh-pages',
                   worktreePath,
-                  commitMessage: pluginConfig.commitMessage
+                  commitMessage: pluginConfig.commitMessage,
+                  force: pluginConfig.force ? '-f' : ''
                 }
               }
             }).then(resolve).catch(reject)
@@ -60,12 +62,12 @@
             var distDir = context.distDir || path.join(context.project.root, 'dist')
             return git.prepareTree(d.worktreePath, d.myRepo, d.repo, d.branch)
               .then(function() {
-                return git.replaceTree(d.worktreePath, distDir, d.commitMessage)
+                return git.replaceTree(d.worktreePath, distDir, d.commitMessage).catch(reject)
               }).then(function(commit) {
                 if (commit) {
-                  return git.push(d.worktreePath, d.repo, d.branch)
-                } else {
-                  console.log("Nothing to deploy")
+                  if (d.force)
+                    console.log(`Force pushing to ${d.branch}`)
+                  return git.push(d.worktreePath, d.repo, d.branch, d.force).catch(reject)
                 }
               }).then(resolve).catch(reject)
           })
