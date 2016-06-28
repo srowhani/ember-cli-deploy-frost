@@ -4,19 +4,19 @@
   module.exports = {
     name: 'ember-cli-deploy-gh-pages',
     createDeployPlugin: function(options) {
-      let currentBranch = null
-      let branch = options.branch || 'gh-pages'
-      let commitMessage = options.commitMessage || `ember-cli-deploy-gh-pages: ${branch}`
-
-      let create = `git checkout --orphan ${branch}; git commit -m "${commitMessage}"; git push -u origin ${branch}`
       return {
         name: options.name,
-        setup () {
+        setup (context) {
+          let pluginConfig = context.config[this.name] || {}
+
+          let branch = pluginConfig.branch || 'gh-pages'
+          let commitMessage = pluginConfig.commitMessage || `ember-cli-deploy-gh-pages: ${branch}`
+
+          let create = `git checkout --orphan ${branch}; git commit -m "${commitMessage}"; git push -u origin ${branch}`
           return new Promise((resolve, reject) => {
             console.log(`Checking if branch '${branch}' already exists...`)
             exec(`git name-rev --name-only HEAD`, (err, out) => {
               if (err) reject(err)
-              currentBranch = out
               exec(`git branch | grep ${branch}`, (err, out) => {
                 if (err) {
                   console.log(`Creating branch '${branch} ...'`)
@@ -47,7 +47,8 @@
                   myRepo,
                   repo: pluginConfig.repo || myRepo,
                   branch: pluginConfig.branch || 'gh-pages',
-                  worktreePath
+                  worktreePath,
+                  commitMessage: pluginConfig.commitMessage
                 }
               }
             }).then(resolve).catch(reject)
