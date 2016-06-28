@@ -60,7 +60,7 @@
             var distDir = context.distDir || path.join(context.project.root, 'dist')
             return git.prepareTree(d.worktreePath, d.myRepo, d.repo, d.branch)
               .then(function() {
-                return git.replaceTree(d.worktreePath, distDir)
+                return git.replaceTree(d.worktreePath, distDir, d.commitMessage)
               }).then(function(commit) {
                 if (commit) {
                   return git.push(d.worktreePath, d.repo, d.branch)
