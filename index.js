@@ -14,8 +14,10 @@
             pluginConfig = context.config[this.name] || {}
             pluginConfig.branch = pluginConfig.branch || 'gh-pages'
             pluginConfig.commitMessage = pluginConfig.commitMessage || 'Deploy'
-            if (pluginConfig.slack && pluginConfig.slack.webhookURL) {
-              slack = new Slack(pluginConfig.slack.webhookURL, pluginConfig.slack.options)
+            let s = pluginConfig.slack
+            s.options = s.options || {}
+            if (s && s.webhookURL && s.options.channel) {
+              slack = new Slack(s.webhookURL, s.options)
             }
             let branch = pluginConfig.branch
             let commitMessage = pluginConfig.commitMessage
@@ -81,7 +83,7 @@
                   }
                 }).then(resolve).catch(reject)
             }).then((out) => {
-              slack.notify({
+              slack ? slack.notify({
                 attachments: [{
                   "fallback": "Success",
                   "pretext": "Successful build!",
@@ -92,11 +94,11 @@
                     "short": false
                   }]
                 }]
-              }, () => {
-                res(out)
-              })
+              }, (e) => {
+                e ? rej(e) : res(out)
+              }) : res(out)
             }).catch((err) => {
-              slack.notify({
+              slack ? slack.notify({
                 mrkdwn: true,
                 attachments: [{
                   "fallback": "Deployment failed!",
@@ -112,10 +114,11 @@
                   "text": `\`\`\`${err}\`\`\``,
                   "mrkdwn_in": ["text"]
                 }]
-              }, () => {
-                rej(err)
-              })
+              }, (e) => {
+                e ? rej(e) : rej(err)
+              }) : rej(err)
             })
+
           })
         }
       })
