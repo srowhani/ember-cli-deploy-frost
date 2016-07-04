@@ -14,7 +14,7 @@
             pluginConfig = context.config[this.name] || {}
             pluginConfig.branch = pluginConfig.branch || 'gh-pages'
             pluginConfig.commitMessage = pluginConfig.commitMessage || 'Deploy'
-            let s = pluginConfig.slack
+            let s = pluginConfig.slack || {}
             s.options = s.options || {}
             if (s && s.webhookURL && s.options.channel) {
               slack = new Slack(s.webhookURL, s.options)
@@ -65,11 +65,12 @@
         },
         upload(context) {
           var pluginConfig = context.config[this.name] || {}
+          let s = pluginConfig.slack || {}
+
           return new Promise((res, rej) => {
             return new Promise((resolve, reject) => {
               var d = context.gitDeploy
               var distDir = context.distDir || path.join(context.project.root, 'dist')
-              let s = pluginConfig.slack || {}
               return git.prepareTree(d.worktreePath, d.myRepo, d.repo, d.branch)
                 .then(() => {
                   return git.replaceTree(d.worktreePath, distDir, d.commitMessage).catch(reject)
