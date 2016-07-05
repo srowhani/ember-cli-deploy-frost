@@ -64,12 +64,12 @@
           })
         },
         upload(context) {
-          var pluginConfig = context.config[this.name] || {}
+          let pluginConfig = context.config[this.name] || {}
           let s = pluginConfig.slack || {}
+          let d = context.gitDeploy
 
           return new Promise((res, rej) => {
             return new Promise((resolve, reject) => {
-              var d = context.gitDeploy
               var distDir = context.distDir || path.join(context.project.root, 'dist')
               return git.prepareTree(d.worktreePath, d.myRepo, d.repo, d.branch)
                 .then(() => {
