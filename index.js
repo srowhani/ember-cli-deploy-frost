@@ -43,19 +43,27 @@
         setup(context) {
           let create = `git checkout --orphan ${pluginConfig.branch}; git commit -m "${pluginConfig.commitMessage}"; git push -u origin ${pluginConfig.branch}`
           return new Promise((resolve, reject) => {
-            this.log(`Checking if branch '${pluginConfig.branch}' already exists...`, {
+            this.log(`Getting current branch name`, {
               color: 'yellow'
             })
             exec(`git name-rev --name-only HEAD`, (err, currentBranch) => {
               if (err) reject(err)
-
+              this.log(`Checking if branch '${pluginConfig.branch}' already exists...`, {
+                color: 'yellow'
+              })
               exec(`git branch | grep ${pluginConfig.branch}`, (err, out) => {
                 if (err) {
                   this.log(`Creating branch '${pluginConfig.branch} ...'`, {
                     color: 'yellow'
                   })
-                  exec(`${create}; git checkout ${currentBranch}`, (err, out) => {
+                  exec(`${create}`, (err, out) => {
                     err ? reject(err) : resolve(out)
+                    this.log(`Checking out previous branch.`, {
+                      color: 'yellow'
+                    })
+                    exec(`git checkout ${currentBranch}`, (err, out) => {
+                      err ? reject(err) : resolve(out)
+                    })
                   })
                 }
                 resolve(out)
