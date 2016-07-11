@@ -91,7 +91,7 @@
                   "color": "good",
                   "fields": [{
                     "title": "Build completed.",
-                    "value": s.successMessage || `Succesfully built to branch ${d.branch}`,
+                    "value": s.successMessage || `Successfully built to branch ${d.branch}`,
                     "short": false
                   }]
                 }]
