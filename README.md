@@ -11,20 +11,36 @@ Based *heavily* on [@ef4](https://github.com/ef4)'s [ember-cli-deploy-git](https
 Configuration is optional, will work fine from the box.
 But for ease of access, some options are exposed
 
-From `config/deploy.js`:
-
-```js
-ENV['gh-pages'] = {
-  repo: '<repo url>', -> default : current git origin
-  branch: '<branch name>', -> default :gh-pages
-  worktreePath: '<path to where dist is built>', -> default :tmp/deploy-dist
-  commitMessage: '<message on commit>', -> default :ember-cli-deploy-gh-pages: ${branch}
-  verbose: true -> default :false
-};
-```
 ## Installation
 
 `ember install ember-cli-deploy ember-cli-deploy-build ember-cli-deploy-gh-pages`
+
+A blueprint will run to generate `config/deploy.js`
+
+From there, you will need to customize the following:
+
+```js
+ENV['gh-pages'] = {
+    force: process.env.gitForcePush,
+    slack: {
+      webhookURL: process.env.webhookURL,
+      options: {
+        channel: process.env.slackChannel
+      },
+      success (deploy) {
+        return `
+          Successfully deployed to ${deploy.branch}\n
+          Visit at ${process.env.demoURL}
+        `;
+      },
+      failure (error) {
+         return error;
+      }
+    }
+  };
+```
+
+Both the `success` and `failure` hooks are optional.
 
 ## ember-cli-deploy Hooks Implemented
 
