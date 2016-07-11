@@ -67,7 +67,6 @@
           let pluginConfig = context.config[this.name] || {}
           let s = pluginConfig.slack || {}
           let d = context.gitDeploy
-
           return new Promise((res, rej) => {
             return new Promise((resolve, reject) => {
               var distDir = context.distDir || path.join(context.project.root, 'dist')
@@ -91,7 +90,7 @@
                   "color": "good",
                   "fields": [{
                     "title": "Build completed.",
-                    "value": s.successMessage || `Successfully built to branch ${d.branch}`,
+                    "value": typeof s.success  === 'function' ? s.success(d) : `Successfully built to branch ${d.branch}`,
                     "short": false
                   }]
                 }]
@@ -112,7 +111,7 @@
                   }]
                 }, {
                   "color": "danger",
-                  "text": `\`\`\`${err}\`\`\``,
+                  "text": typeof s.failure === 'function' ? s.failure(d) : `\`\`\`${err}\`\`\``,
                   "mrkdwn_in": ["text"]
                 }]
               }, (e) => {
